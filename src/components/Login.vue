@@ -7,7 +7,7 @@
           <v-form @submit.prevent="login">
             <v-text-field prepend-inner-icon="mdi-account" v-model="userCredentials.userName"
               label="username"></v-text-field>
-            <v-text-field prepend-inner-icon="mdi-lock" v-model="userCredentials.passWord" label="password"
+            <v-text-field prepend-inner-icon="mdi-lock" v-model="userCredentials.password" label="password"
               type="password"></v-text-field>
             <v-btn color="primary" block>
               Login
@@ -37,9 +37,9 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-import { User } from "../interface/login";
+import { Credentials } from "../interface/general";
 import { fetchLoginService } from "../services/loginService";
-import OpenAccount from "./OpenAccount.vue";
+import OpenAccount from "./open-account/OpenAccount.vue";
 
 export default defineComponent({
   name: "Login",
@@ -47,14 +47,14 @@ export default defineComponent({
     OpenAccount,
   },
   setup() {
-    const userCredentials: User = reactive({
+    const userCredentials: Credentials = reactive({
       userName: "",
-      passWord: "",
+      password: "",
     });
     const showAccountDialog = ref(false);
     const noAccountPlaceholder = "Dont have an account?";
     const login = async () => {
-      await fetchLoginService(userCredentials.userName, userCredentials.passWord);
+      await fetchLoginService(userCredentials.userName, userCredentials.password);
     };
     return {
       userCredentials,
