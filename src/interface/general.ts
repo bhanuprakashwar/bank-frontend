@@ -12,7 +12,6 @@ export interface Register {
     userName: string,
     password: string,
     confirmPassword?: string,
-    dob: string,
     emailId: string,
     gender: string,
 }

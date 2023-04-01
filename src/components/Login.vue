@@ -2,6 +2,11 @@
   <v-container fluid class="fill-height">
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6" lg="4">
+        <v-alert v-if="showSuccessAlert" color="success" icon="$success" title="Alert title" closable
+          text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus...">
+        </v-alert>
+        <v-progress-linear v-if="showSuccessAlert" color="deep-purple-accent-4" height="5"
+          v-model="progressValue"></v-progress-linear>
         <v-sheet elevation="10" width="100%" height="100%" rounded="lg" class="pa-5">
           <h1 class="mb-5">Welcome to the WarBank</h1>
           <v-form @submit.prevent="login">
@@ -25,7 +30,7 @@
                 Create Account
               </v-card-title>
               <v-card-text>
-                <OpenAccount/>
+                <OpenAccount @accountStatus="getAccountStatus" />
               </v-card-text>
             </v-card>
           </v-dialog>
@@ -47,20 +52,38 @@ export default defineComponent({
     OpenAccount,
   },
   setup() {
+    const progressValue = ref(0)
     const userCredentials: Credentials = reactive({
       userName: "",
       password: "",
     });
-    const showAccountDialog = ref(false);
+    let showAccountDialog = ref(false);
+    let showSuccessAlert = ref(false);
     const noAccountPlaceholder = "Dont have an account?";
     const login = async () => {
       await fetchLoginService(userCredentials.userName, userCredentials.password);
+    };
+    const getAccountStatus = (status: any) => {
+      showAccountDialog.value = false;
+      if (status) {
+        showSuccessAlert.value = true;
+        setInterval(() => {
+          if (progressValue.value < 100) {
+            progressValue.value += 1.67;
+          } else {
+            showSuccessAlert.value = false
+          }
+        }, 50);
+      }
     };
     return {
       userCredentials,
       noAccountPlaceholder,
       login,
       showAccountDialog,
+      getAccountStatus,
+      showSuccessAlert,
+      progressValue
     };
   },
 });
