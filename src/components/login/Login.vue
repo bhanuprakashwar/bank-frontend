@@ -2,6 +2,9 @@
   <v-container fluid class="fill-height">
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6" lg="4">
+        <v-alert v-if="showLoginAlert" color="error" icon="$error" title="Login Failed" closable
+          :text="loginApiResponse">
+        </v-alert>
         <v-alert v-if="showSuccessAlert" color="success" icon="$success" title="Success" closable
           :text="apiAccountCreationStatus">
         </v-alert>
@@ -48,29 +51,55 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from "vue";
-import { Credentials } from "../interface/general";
-import { fetchLoginService } from "../services/loginService";
-import OpenAccount from "./open-account/OpenAccount.vue";
-
+import { Credentials } from "../../interface/general";
+import { fetchLoginService } from "./login.service";
+import OpenAccount from "../open-account/OpenAccount.vue";
+import { useStore } from "../../store";
+import { useRouter } from 'vue-router';
 export default defineComponent({
   name: "Login",
   components: {
     OpenAccount,
   },
   setup() {
-    const progressValue = ref(0)
+    const store = useStore();
+    const router = useRouter();
+
     const userCredentials: Credentials = reactive({
       userName: "",
       password: "",
     });
+    const noAccountPlaceholder = "Dont have an account?";
+
     const showAccountDialog = ref(false);
     const showSuccessAlert = ref(false);
     const showWarningAlert = ref(false);
     const showErrorAlert = ref(false);
-    const noAccountPlaceholder = "Dont have an account?";
+    const showLoginAlert = ref(false);
+
     const apiAccountCreationStatus = ref("");
+    const loginApiResponse = ref("");
+    const progressValue = ref(0);
+    const isValid = computed(() => {
+      return (
+        userCredentials.userName && userCredentials.password
+      );
+    });
+    //methods
     const login = async () => {
-      await fetchLoginService(userCredentials.userName, userCredentials.password);
+      showLoginAlert.value = false;
+      try {
+        const response = await fetchLoginService(userCredentials.userName, userCredentials.password);
+        if(response.apiToken){
+          store.setApikey(response.apiToken);
+          router.push('/account');
+        } else if(response.error){
+          showLoginAlert.value = true;
+          loginApiResponse.value = response.error;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     };
     const getAccountStatus = (status: any) => {
       showAccountDialog.value = false;
@@ -93,11 +122,7 @@ export default defineComponent({
         }
       }, 50);
     };
-    const isValid = computed(() => {
-      return (
-        userCredentials.userName && userCredentials.password
-      );
-    });
+
     return {
       userCredentials,
       noAccountPlaceholder,
@@ -109,7 +134,9 @@ export default defineComponent({
       showErrorAlert,
       apiAccountCreationStatus,
       progressValue,
-      isValid
+      isValid,
+      loginApiResponse,
+      showLoginAlert
     };
   },
 });

@@ -1,6 +1,6 @@
 import axios from "axios";
-import { Register } from "../interface/general";
-import { config } from "../const/constants";
+import { Register } from "../../interface/general";
+import { config } from "../../const/constants";
 export async function createWarAccount(userRegistration: Register) {
     let payload = {
         userName: userRegistration.userName,

@@ -17,7 +17,7 @@
 <script lang="ts">
 import { computed, defineComponent, reactive } from "vue";
 import { Register } from "../../interface/general";
-import { createWarAccount } from "../../services/registerService";
+import { createWarAccount } from "./openAccount.service";
 
 export default defineComponent({
   name: "OpenAccount",
