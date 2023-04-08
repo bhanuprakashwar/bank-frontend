@@ -33,11 +33,12 @@ export default defineComponent({
     const createAccount = async () => {
       try {
         const response = await createWarAccount(userRegistration);
-        if(response.account){
-          emit("accountStatus",true);
+        if(response){
+          emit("accountStatus",response);
         }
       } catch (err) {
         console.log("Something went wrong");
+         //emit("accountStatus",response);
       }
     };
 
