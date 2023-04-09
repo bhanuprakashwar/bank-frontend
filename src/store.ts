@@ -10,4 +10,9 @@ export const useStore = defineStore({
         this.apiToken = apiToken
     },
   },
+  getters: {
+    isAuthenticated(): boolean {
+      return this.apiToken !== '';
+    }
+  }
 })
